@@ -1,0 +1,12 @@
+Unidecode
+geonamescache
+dateutils
+casefy
+lxml
+regex
+botasaurus
+pymongo[srv]
+python-dateutil
+Django==4.0.6
+requests==2.31.0
+django-dotenv==1.4.2
