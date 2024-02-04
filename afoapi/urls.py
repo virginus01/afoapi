@@ -18,6 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from qanda import views
+from screenshot.src import screenshot_taker
 
 urlpatterns = [
     path('admin/', admin.site.urls, name='admin'),
@@ -25,4 +26,5 @@ urlpatterns = [
     path('fetch/', views.fetch_q_and_a, name='fetch'),
     path('fetch_all/', views.get_all_subjects, name='fetch_all'),
     path('view_qanda/', views.view_q_and_a, name='view_qanda'),
+    path('screenshot/', screenshot_taker.take_screenshot, name='screenshot'),
 ]
