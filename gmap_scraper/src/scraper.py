@@ -95,13 +95,13 @@ def set_cookies(ck):
 @request(
     parallel=5,
     async_queue=True,
-
     close_on_crash=True,
     output=None,
     use_stealth=True,
-
+    cache=True,
     # TODO: IMPLEMENT AND UNCOMMENT
     max_retry=5,
+
     # retry_wait=30, {ADD}
     # request_interval=0.2, {ADD}
 

@@ -2,6 +2,66 @@
     "query": "Web Designers in Nigeria",
     "places": [
         {
+            "place_id": "ChIJGU3nx2BzThARzL4XxhAgKj8",
+            "name": "VIS Nigeria | Website Design Abuja",
+            "link": "https://www.google.com/maps/place/VIS+Nigeria+%7C+Website+Design+Abuja/data=!4m7!3m6!1s0x104e7360c7e74d19:0x3f2a2010c617becc!8m2!3d9.0219956!4d7.4722117!16s%2Fg%2F11h0g_kbwm!19sChIJGU3nx2BzThARzL4XxhAgKj8?authuser=0&hl=en&rclk=1",
+            "main_category": "Website designer",
+            "categories": [
+                "Website designer"
+            ],
+            "rating": 4.9,
+            "reviews": 50,
+            "address": "VIS Nigeria | Website Design Abuja, Block A3 Suite 8/9 Commerce Plaza Area 1, Abuja 900241",
+            "website": "http://vis.ng/",
+            "about": "We take the big picture in mind when suggesting SEO, web design, and other services. While clever copy and intelligent design are helpful, nothing beats earning more than you invest in digital marketing. We focus on getting you a high return on investment (ROI).",
+            "featured_image": "https://lh5.googleusercontent.com/p/AF1QipMGg5y9bN4p4YWzfCLW8cNvoZH4lU_eDOmX1z2q=w360-h218-k-no",
+            "phone": "09070500021",
+            "all_images": "{https://lh5.googleusercontent.com/p/AF1QipM24bfpq4U8W1NLmE3JUAT_U6_4stO8kFAUxiVw=w529-h298-k-no, https://lh5.googleusercontent.com/p/AF1QipMGg5y9bN4p4YWzfCLW8cNvoZH4lU_eDOmX1z2q=w491-h298-k-no, None}",
+            "detailed_reviews": [
+                {
+                    "reviewer": "lilian chioma",
+                    "reviewer_image": "https://www.google.com/maps/contrib/117870748738103523583?hl=en-US",
+                    "review": "I bless the day, I found out about you guys. I like the good reception from your end. Great customer service. I love the designs too."
+                },
+                {
+                    "reviewer": "Chioma Phoebe",
+                    "reviewer_image": "https://www.google.com/maps/contrib/117184270217282468212?hl=en-US",
+                    "review": "Working with VIS Nigeria has been smooth. I love the audience and patience you people posses over there."
+                },
+                {
+                    "reviewer": "Ifunanya Precious",
+                    "reviewer_image": "https://www.google.com/maps/contrib/109508250819990822525?hl=en-US",
+                    "review": "I love the website that vis Nigeria designed for me. It has a fast load speed and it works fine on mobile"
+                },
+                {
+                    "reviewer": "golden onyeama",
+                    "reviewer_image": "https://www.google.com/maps/contrib/108403387845219212770?hl=en-US",
+                    "review": "VIS Nigeria is different from other website design companies. They overdelivered!"
+                },
+                {
+                    "reviewer": "Bluechip company",
+                    "reviewer_image": "https://www.google.com/maps/contrib/118071196574288750048?hl=en-US",
+                    "review": "Blue - Chip Company Ltd recognizes and compliments the competency of VIS Web developers"
+                },
+                {
+                    "reviewer": "EJIKE CHIAHA",
+                    "reviewer_image": "https://www.google.com/maps/contrib/100423270447627968364?hl=en-US",
+                    "review": "Thank you so much, great company, great job. I'd sure be returning."
+                },
+                {
+                    "reviewer": "Pecu Preshy",
+                    "reviewer_image": "https://www.google.com/maps/contrib/115674392797270531407?hl=en-US",
+                    "review": "I love the look of my E-commerce site it all thanks to VIS NIGERIA!!!"
+                },
+                {
+                    "reviewer": "fwks hjy f",
+                    "reviewer_image": "https://www.google.com/maps/contrib/117778661430891924085?hl=en-US",
+                    "review": "I am in Kano and I want an employee to work for me in a company, advertising and making websites"
+                }
+            ],
+            "is_spending_on_ads": false
+        },
+        {
             "place_id": "ChIJrchkHf2ROxAR2qrGDIAO5gU",
             "name": "Web Design Nigeria",
             "link": "https://www.google.com/maps/place/Web+Design+Nigeria/data=!4m7!3m6!1s0x103b91fd1d64c8ad:0x5e60e800cc6aada!8m2!3d9.0338725!4d8.677457!16s%2Fg%2F11h18s7bcz!19sChIJrchkHf2ROxAR2qrGDIAO5gU?authuser=0&hl=en&rclk=1",
@@ -17,6 +77,7 @@
             "about": "Web Design Nigeria is a professional Web development and SEO agency located in Lagos Nigeria.\nWe leverage modern technologies to grow the businesses of our clients.\n\nWe service forward-thinking businesses to reach their prospects and target markets using our years of experience, creativity and passion.\nOur focus remains helping brands to succeed online.\nOur services include:\n\nWeb development\nSearch Engine positioning\nSocial media marketing\nSearch Engine Marketing\nGraphics Design\nProduct design",
             "featured_image": "https://lh5.googleusercontent.com/p/AF1QipMU9X1g4-REgmfim5WEKUipVLZfGuOKZDSIxRaQ=w360-h360-k-no",
             "phone": "08114900422",
+            "all_images": "{None, https://lh5.googleusercontent.com/p/AF1QipMU9X1g4-REgmfim5WEKUipVLZfGuOKZDSIxRaQ=w298-h298-k-no}",
             "detailed_reviews": [
                 {
                     "reviewer": "Chi Ofoegbu",
@@ -62,65 +123,6 @@
             "is_spending_on_ads": false
         },
         {
-            "place_id": "ChIJGU3nx2BzThARzL4XxhAgKj8",
-            "name": "VIS Nigeria | Website Design Abuja",
-            "link": "https://www.google.com/maps/place/VIS+Nigeria+%7C+Website+Design+Abuja/data=!4m7!3m6!1s0x104e7360c7e74d19:0x3f2a2010c617becc!8m2!3d9.0219956!4d7.4722117!16s%2Fg%2F11h0g_kbwm!19sChIJGU3nx2BzThARzL4XxhAgKj8?authuser=0&hl=en&rclk=1",
-            "main_category": "Website designer",
-            "categories": [
-                "Website designer"
-            ],
-            "rating": 4.9,
-            "reviews": 50,
-            "address": "VIS Nigeria | Website Design Abuja, Block A3 Suite 8/9 Commerce Plaza Area 1, Abuja 900241",
-            "website": "http://vis.ng/",
-            "about": "We take the big picture in mind when suggesting SEO, web design, and other services. While clever copy and intelligent design are helpful, nothing beats earning more than you invest in digital marketing. We focus on getting you a high return on investment (ROI).",
-            "featured_image": "https://lh5.googleusercontent.com/p/AF1QipMGg5y9bN4p4YWzfCLW8cNvoZH4lU_eDOmX1z2q=w360-h218-k-no",
-            "phone": "09070500021",
-            "detailed_reviews": [
-                {
-                    "reviewer": "lilian chioma",
-                    "reviewer_image": "https://www.google.com/maps/contrib/117870748738103523583?hl=en-US",
-                    "review": "I bless the day, I found out about you guys. I like the good reception from your end. Great customer service. I love the designs too."
-                },
-                {
-                    "reviewer": "Chioma Phoebe",
-                    "reviewer_image": "https://www.google.com/maps/contrib/117184270217282468212?hl=en-US",
-                    "review": "Working with VIS Nigeria has been smooth. I love the audience and patience you people posses over there."
-                },
-                {
-                    "reviewer": "Ifunanya Precious",
-                    "reviewer_image": "https://www.google.com/maps/contrib/109508250819990822525?hl=en-US",
-                    "review": "I love the website that vis Nigeria designed for me. It has a fast load speed and it works fine on mobile"
-                },
-                {
-                    "reviewer": "golden onyeama",
-                    "reviewer_image": "https://www.google.com/maps/contrib/108403387845219212770?hl=en-US",
-                    "review": "VIS Nigeria is different from other website design companies. They overdelivered!"
-                },
-                {
-                    "reviewer": "Bluechip company",
-                    "reviewer_image": "https://www.google.com/maps/contrib/118071196574288750048?hl=en-US",
-                    "review": "Blue - Chip Company Ltd recognizes and compliments the competency of VIS Web developers"
-                },
-                {
-                    "reviewer": "EJIKE CHIAHA",
-                    "reviewer_image": "https://www.google.com/maps/contrib/100423270447627968364?hl=en-US",
-                    "review": "Thank you so much, great company, great job. I'd sure be returning."
-                },
-                {
-                    "reviewer": "Pecu Preshy",
-                    "reviewer_image": "https://www.google.com/maps/contrib/115674392797270531407?hl=en-US",
-                    "review": "I love the look of my E-commerce site it all thanks to VIS NIGERIA!!!"
-                },
-                {
-                    "reviewer": "Mathias Agbo",
-                    "reviewer_image": "https://www.google.com/maps/contrib/115512190756450360384?hl=en-US",
-                    "review": "Very professional service, they blew my mind, you should patronize them"
-                }
-            ],
-            "is_spending_on_ads": false
-        },
-        {
             "place_id": "ChIJgXR70N11ThARed4qTtgwV4k",
             "name": "Babatunde Raji | Best Website Designer & Digital Marketer, Nigeria",
             "link": "https://www.google.com/maps/place/Babatunde+Raji+%7C+Best+Website+Designer+%26+Digital+Marketer,+Nigeria/data=!4m7!3m6!1s0x104e75ddd07b7481:0x895730d84e2ade79!8m2!3d9.0704605!4d7.4264153!16s%2Fg%2F11jv477k16!19sChIJgXR70N11ThARed4qTtgwV4k?authuser=0&hl=en&rclk=1",
@@ -139,6 +141,7 @@
             "about": "Babatunde Raji Digital help businesses to achieve their business visibility goal through graphics designing, branding, web designing, Social Media Management, and Marketing.",
             "featured_image": "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=KR2-QyrCSh6OK6VnZHgMfg&cb_client=search.gws-prod.gps&w=211&h=120&yaw=243.96587&pitch=0&thumbfov=100",
             "phone": "07060569963",
+            "all_images": "{https://lh5.googleusercontent.com/p/AF1QipOHwIEpxdJAIJsA-DnmlVpgWy6lSmL6DTUaQnWM=w589-h298-k-no, https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=KR2-QyrCSh6OK6VnZHgMfg&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=243.96587&pitch=0&thumbfov=100, https://lh5.googleusercontent.com/p/AF1QipOdadCuB87pfxSJYPLkaJSqqypyaPdJrqJqbiCw=w405-h298-k-no, https://lh5.googleusercontent.com/p/AF1QipNqBZdB87SQeBUU35rt9IwdgLBFuWeBk8dwEjkd=w456-h298-k-no}",
             "detailed_reviews": [
                 {
                     "reviewer": "Abosede Ogunrinde",

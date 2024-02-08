@@ -51,6 +51,7 @@ class Fields:
 
     ABOUT = "about"
     IMAGES = "images"
+    ALL_IMAGES = 'all_images'
     HOURS = "hours"
     MOST_POPULAR_TIMES = "most_popular_times"
     POPULAR_TIMES = "popular_times"
@@ -72,6 +73,7 @@ DEFAULT_FIELDS_WITHOUT_SOCIAL_DATA = [
     Fields.WEBSITE,
     Fields.FEATURED_IMAGE,
     Fields.PHONE,
+    Fields.ALL_IMAGES,
     Fields.DETAILED_REVIEWS
 ]
 

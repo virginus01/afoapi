@@ -1,6 +1,8 @@
+import random
 import re as rex
 import json
 from datetime import datetime
+import string
 import sys
 
 from src.scraper_utils import create_search_link
@@ -121,17 +123,20 @@ def get_feautured_image(data):
     return safe_get(data, 6, 37, 0, 0, 6, 0)
 
 
-def get_reviews_data(data):
-    return extract_reviews(data)
+def get_images_0(data):
+    return safe_get(data, 6, 171, 0, 0, 3, 0, 6, 0)
 
 
-# Replace 'your_data' with the actual variable containing your data
-# your_data = [[[...]]]  # Replace this with the actual data structure
-# all_reviews = extract_reviews(your_data)
+def get_images_1(data):
+    return safe_get(data, 6, 171, 0, 1, 3, 0, 6, 0)
 
-# Print all extracted reviews
-# for review in all_reviews:
-    # print(review)
+
+def get_images_2(data):
+    return safe_get(data, 6, 171, 0, 2, 3, 0, 6, 0)
+
+
+def get_images_3(data):
+    return safe_get(data, 6, 171, 0, 3, 3, 0, 6, 0)
 
 
 def parse(data):
@@ -203,12 +208,20 @@ def perform_extract_possible_map_link(input_str):
 
 def check_data(data):
     try:
+        # Define the pool of characters to choose from
+        characters = string.ascii_letters + string.digits  # Alphanumeric characters
+
+        # Generate random code
+        random_code = ''.join(random.choice(characters) for _ in range(10))
+
         n = 0
-        with open('output.txt', 'a', encoding='utf-8') as file:
+
+        with open(f'output.txt', 'a', encoding='utf-8') as file:
             for key in data:
                 if key is not None:
                     output_line = f"key: {n} {str([key])}\n"
-                    print(output_line)
+                    print(
+                        output_line+"------------------------------------------------------------------------------")
                     file.write(output_line)
                 n += 1
     except Exception as e:
@@ -232,10 +245,19 @@ def get_detailed_reviews(data):
 
 def extract_data(input_str, link):
     data = parse(input_str)
+    # 157 icon
+    # 171 image
+    # check_data(data[6][171][0][0][3][0][6])
+
+    all_images = []
+    all_images.append(get_images_0(data))
+    all_images.append(get_images_1(data))
+    all_images.append(get_images_2(data))
+    all_images.append(get_images_3(data))
+    images = '{' + ', '.join(map(str, set(all_images))) + '}'
 
     categories = get_categories(data)
     place_id = get_place_id(data)
-
     title = get_title(data)
     rating = get_rating(data)
     reviews = get_reviews(data)
@@ -260,5 +282,6 @@ def extract_data(input_str, link):
         'about': about,
         'featured_image': featured_image,
         'phone': phone,
+        'all_images': images,
         'detailed_reviews': detailed_reviews,
     }

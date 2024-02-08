@@ -237,6 +237,9 @@ def transform_places(places, fields):
             elif field == Fields.ABOUT:
                 transformed_place[Fields.ABOUT] = place[Fields.ABOUT]
 
+            elif field == Fields.ALL_IMAGES:
+                transformed_place[Fields.ALL_IMAGES] = place[Fields.ALL_IMAGES]
+
             elif field == Fields.DETAILED_REVIEWS:
                 transformed_place[Fields.DETAILED_REVIEWS] = place[Fields.DETAILED_REVIEWS]
 
