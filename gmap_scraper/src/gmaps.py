@@ -59,16 +59,16 @@ def clean_social(social_details):
 def print_social_errors(credits_exhausted, not_subscribed, unknown_error):
     # print(credits_exhausted)
     if credits_exhausted:
-        print(f"Could not get social details for {len(
-            credits_exhausted)} places due to credit exhaustion. Please consider upgrading your plan by visiting https://rapidapi.com/Chetan11dev/api/website-social-scraper-api/pricing to continue scraping social details.")
+        print(f"""Could not get social details for {
+            len(credits_exhausted)} places due to credit exhaustion. Please consider upgrading your plan by visiting https://rapidapi.com/Chetan11dev/api/website-social-scraper-api/pricing to continue scraping social details.""")
 
     if not_subscribed:
-        print(f"Could not get social details for {len(
-            not_subscribed)} places as you are not subscribed to Website Social Scraper. Please subscribe to a free plan by visiting https://rapidapi.com/Chetan11dev/api/website-social-scraper-api/pricing to scrape social details.")
+        print(f"""Could not get social details for {len(
+            not_subscribed)} places as you are not subscribed to Website Social Scraper. Please subscribe to a free plan by visiting https://rapidapi.com/Chetan11dev/api/website-social-scraper-api/pricing to scrape social details.""")
 
     if unknown_error:
-        print(f"Could not get social details for {
-              len(unknown_error)} places due to Unknown Error.")
+        print(f"""Could not get social details for {
+              len(unknown_error)} places due to Unknown Error.""")
 
     pass
 

@@ -3,6 +3,7 @@ from io import BytesIO
 from botasaurus import AntiDetectDriver, browser
 from PIL import Image
 from django.http import HttpResponse, JsonResponse
+import boto3
 
 
 @browser(
@@ -46,6 +47,50 @@ def take_screenshot(driver: AntiDetectDriver, request):
         driver.quit()
 
 
-if __name__ == "__main__":
-    # Initiate the web scraping task
-    take_screenshot()
+@browser(
+    # block_resources=['.css', '.jpg', '.jpeg', '.png', '.svg', '.gif'],
+    add_arguments=[],
+    reuse_driver=True,
+    keep_drivers_alive=True,
+    lang='en',
+    close_on_crash=True,
+    max_retry=3,
+    headless=False,
+    output=None,
+    cache=False
+
+)
+def save_screenshot(driver: AntiDetectDriver, data):
+
+    try:
+        # Open the URL
+        driver.get(data["url"])
+        driver.click()
+        path = f"output/screenshots/{data["slug"]}.png"
+        driver.set_window_size(1920, 1080,)
+        driver.save_screenshot(data["slug"])
+
+        return {'path': path, 'driver': driver}
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        driver.quit()
+        return {'path': ''}
+    finally:
+        # Close the browser window
+        # driver.quit()
+        pass
+
+
+def upload_image_to_s3(file_path, bucket_name, s3_key):
+    # Create an S3 client
+    s3 = boto3.client('s3')
+
+    # Upload file to S3 bucket
+    try:
+        s3.upload_file(file_path, bucket_name, s3_key)
+        print(f"{s3_key} upload Successful")
+    except FileNotFoundError as e:
+        print(f"The file was not found {e}")
+    except ConnectionError as exc:
+        print("Connection error occurred: {0}".format(exc))

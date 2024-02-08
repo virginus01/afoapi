@@ -1,42 +1,21 @@
-import sys
-from botasaurus import AntiDetectDriver, browser
-from PIL import Image
-
-
-@browser(
-    # block_resources=['.css', '.jpg', '.jpeg', '.png', '.svg', '.gif'],
-    add_arguments=[],
-    reuse_driver=True,
-    keep_drivers_alive=True,
-    lang='en',
-    close_on_crash=True,
-    max_retry=3,
-    headless=False,
-    output=None,
-)
-def scrape_heading_task(driver: AntiDetectDriver, data):
-    try:
-        url = "https://topingnow.com/gimages/list/virginus-alajekwu"
-
-        # Open the URL
-        driver.get(url)
-
-        heading = driver.text("h1")
-        # Take a screenshot
-        driver.save_screenshot("screenshot")
-        screenshot = Image.open("output/screenshots/screenshot.png")
-        screenshot.show()
-
-        return {"heading": heading}
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-    finally:
-        # Close the browser window
-        driver.quit()
+from src.process_topics import process_topics_image
+from dotenv import load_dotenv
+import os
+from django.conf import settings
+import boto3
 
 
 if __name__ == "__main__":
+    load_dotenv()
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
+
+    # Set AWS credentials
+    session = boto3.Session(
+        region_name=os.getenv("NEXT_PUBLIC_AWS_REGION"),
+        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
+    )
+    # Configure Django settings
+    settings.configure()
     # Initiate the web scraping task
-    scrape_heading_task()
+    process_topics_image()

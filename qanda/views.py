@@ -190,8 +190,9 @@ def view_q_and_a(request):
                 subject=subject
             ).order_by('?')[:int(limit)]
         count = existing_questions.count()
-        info = f"we could not find one for {
-            q_type} so we matched and fetched others"
+        info = f"we could not find one for {q_type}\
+                so we matched and fetched others"
+
         # Create a list to store the results
         result_data = []
 
