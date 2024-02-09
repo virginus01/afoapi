@@ -11,38 +11,76 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 class SecureDriver(AntiDetectDriver):
 
-    def custom_click2(self: WebDriver, selector, wait=10, url='', index=0):
+    def custom_click(self: WebDriver, selector, wait=10, url='', index=0, data={}):
+        phone = data.get("phone", "23481")
+        msg = data.get("message", "no message")
+        result = {'id': phone, 'success': True, "info": 'sent'}
+        try:
+            i = str(int(index)+1)
 
-        elm = self.get_element_or_none_by_selector(
-            "html > body > div:nth-of-type(1) > div > div > div:nth-of-type(3) > div > div:nth-of-type(1)", 5)
+            elm = None
+            elm = self.get_element_or_none_by_selector(
+                "html > body > div:nth-of-type(1) > div > div > div:nth-of-type(3) > div > div:nth-of-type(1)", 5)
 
-        while elm is None:
-            try:
+            while True:
                 elm = self.get_element_or_none_by_selector(
                     "html > body > div:nth-of-type(1) > div > div > div:nth-of-type(3) > div > div:nth-of-type(1)",
-                    5
+                    10
                 )
-            except:
-                print("Element not found, retrying...")
-                time.sleep(10)
+                if elm is not None:
+                    if "Point your phone at this screen to capture the QR code" in elm.text:
+                        print(
+                            "Point your phone at this screen to capture the QR code")
+                        time.sleep(10)
+                    elif "Loading your chats" in elm.text:
+                        print("Loading your chats wait")
+                        time.sleep(10)
+                    else:
+                        break
+                else:
+                    print("loading chats")
+                    time.sleep(30)
 
-        print("sleeping")
-        time.sleep(wait)
+            print("waiting for 3 seconds")
+            time.sleep(3)
 
-        self.execute_script(f"""arguments['0'].innerHTML = '<a href=\"{
-                            url}\">send</a>';""", elm)
+            self.execute_script(f"arguments[0].innerHTML = '<a href=\"{
+                                url}\" id=\"contact{i}\">{i}</a>';", elm)
 
-        elm2 = self.get_element_or_none_by_selector(
-            "html > body > div:nth-of-type(1) > div > div > div:nth-of-type(3) > div > div:nth-of-type(1) > a", 5)
+            elm2 = self.get_element_or_none_by_selector(
+                "html > body > div:nth-of-type(1) > div > div > div:nth-of-type(3) > div > div:nth-of-type(1) > a", 5)
 
-        if elm2 is None:
-            raise NoSuchElementException(
-                f"Cannot locate element with selector 2")
-        else:
+            if elm2 is None:
+                result = {'id': phone, 'success': False,
+                          "info": 'Cannot locate element with selector 2'}
+            else:
+                time.sleep(1)
+                self.js_click(elm2)
 
-            self.js_click(elm2)
+                if str(i) == str('1'):
+                    time.sleep(50)
+                    print("initial waiting")
+                else:
+                    pass
+
+                el = self.get_element_or_none_by_selector(
+                    selector, wait)
+
+                if el is None:
+                    print(f"Cannot locate element with selector {selector}")
+                    result = {'id': phone, 'success': False,
+                              "info": f"Cannot locate element with selector {selector}"}
+
+                else:
+                    self.js_click(el)
+                    print(f"---- message sent to {phone} -----")
+                    result = {'id': phone, 'success': True,
+                              "info": f"message sent to {phone}"}
+
+        except Exception as e:
+            print(e)
+            result = {'id': phone, 'success': False, "info": e}
+
+        finally:
             time.sleep(5)
-            el = self.get_element_or_none_by_selector(
-                selector, 2)
-            self.js_click(el)
-            print("clicked")
+            return result
