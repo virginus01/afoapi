@@ -108,8 +108,6 @@ def set_cookies(ck):
 )
 def scrape_place(requests: AntiDetectRequests, link):
     cookies = get_cookies()
-    file_name = "result.json"
-
     try:
         html = requests.get(link, cookies=cookies).text
         # Splitting HTML to get the part after 'window.APP_INITIALIZATION_STATE='
@@ -120,14 +118,6 @@ def scrape_place(requests: AntiDetectRequests, link):
         app_initialization_state = initialization_state_part.split(';window.APP_FLAGS')[
             0]
 
-        # with open(file_name, 'r') as json_file:
-        # retrieved_data = json.load(json_file)
-
-        # print("result retrieved")
-        # Write data to the JSON file
-        with open(file_name, 'w') as json_file:
-            json.dump(app_initialization_state, json_file, indent=2)
-            print("result saved")
         # Extracting data from the APP_INITIALIZATION_STATE
         data = extract_data(app_initialization_state, link)
         # data['link'] = link

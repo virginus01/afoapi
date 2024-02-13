@@ -243,7 +243,7 @@ def process_result(min_reviews, max_reviews, category_in, has_website, has_phone
     cleaned_places = ls
 
     # 4. Write Output
-    write_output(query, cleaned_places, fields)
+    # write_output(query, cleaned_places, fields)
 
     result_item = {"query": query, "places": cleaned_places}
     return result_item
@@ -352,32 +352,31 @@ class Gmaps:
         should_scrape_socials = key is not None
         fields = determine_fields(
             fields, should_scrape_socials, scrape_reviews)
+        try:
+            for query in queries:
+                # 1. Scrape Places
+                print(f"processing {query}")
+                place_data = create_place_data(
+                    query, is_spending_on_ads, max, lang, geo_coordinates, zoom, convert_to_english)
 
-        for query in queries:
-            # 1. Scrape Places
+                places_obj = scraper.scrape_places(place_data, cache=use_cache)
 
-            place_data = create_place_data(
-                query, is_spending_on_ads, max, lang, geo_coordinates, zoom, convert_to_english)
+                result_item = process_result(min_reviews, max_reviews, category_in, has_website, has_phone, min_rating, max_rating, sort, key,
+                                             scrape_reviews, reviews_max, reviews_sort, fields, lang, should_scrape_socials, convert_to_english, use_cache, places_obj)
 
-            places_obj = scraper.scrape_places(place_data, cache=use_cache)
-
-            result_item = process_result(min_reviews, max_reviews, category_in, has_website, has_phone, min_rating, max_rating, sort, key,
-                                         scrape_reviews, reviews_max, reviews_sort, fields, lang, should_scrape_socials, convert_to_english, use_cache, places_obj)
-
-            post_item = {
-                'query': result_item["query"],
-                'places': result_item["places"],
-            }
-            post_result.append(post_item)
-            result.append(result_item)
-
-        all_places = sort_places(merge_places(result), sort)
-        write_output("all", all_places, fields)
-        post = post_topics(post_result)
-        print(post)
-
-        scraper.scrape_places.close()
-        return result
+                post_item = {
+                    'query': result_item["query"],
+                    'places': result_item["places"],
+                }
+                post_result.append(post_item)
+                result.append(result_item)
+            post = post_topics(post_result)
+            print(post)
+            scraper.scrape_places.close()
+            return result
+        except Exception as e:
+            print(f"error: {e}")
+            pass
 
     @staticmethod
     def links(

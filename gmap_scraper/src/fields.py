@@ -32,6 +32,9 @@ class Fields:
     ADDRESS = "address"
     REVIEW_KEYWORDS = "review_keywords"
     LINK = "link"
+    LOCATION = "location"
+    LANG_LONG = "lang_long"
+    LANG_SHORT = "lang_short"
 
     STATUS = "status"
     PRICE_RANGE = "price_range"
@@ -74,7 +77,13 @@ DEFAULT_FIELDS_WITHOUT_SOCIAL_DATA = [
     Fields.FEATURED_IMAGE,
     Fields.PHONE,
     Fields.ALL_IMAGES,
-    Fields.DETAILED_REVIEWS
+    Fields.DETAILED_REVIEWS,
+    Fields.COORDINATES,
+    Fields.WORKDAY_TIMING,
+    Fields.TIME_ZONE,
+    Fields.LOCATION,
+    Fields.LANG_LONG,
+    Fields.LANG_SHORT,
 ]
 
 DEFAULT_SOCIAL_FIELDS = [

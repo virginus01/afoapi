@@ -139,6 +139,30 @@ def get_images_3(data):
     return safe_get(data, 6, 171, 0, 3, 3, 0, 6, 0)
 
 
+def get_workding_days(data):
+    return safe_get(data, 6, 34)
+
+
+def get_time_zone(data):
+    return safe_get(data, 6, 30)
+
+
+def get_icon(data):
+    return safe_get(data, 6, 157)
+
+
+def get_location(data):
+    return safe_get(data, 6, 166)
+
+
+def get_lang_long(data):
+    return safe_get(data, 6, 107)
+
+
+def get_lang_short(data):
+    return safe_get(data, 6, 110)
+
+
 def parse(data):
     # Assuming 'input_string' is provided to the function in some way
     input_string = json.loads(data)[3][6]  # Replace with actual input
@@ -165,6 +189,23 @@ def extract_business_name(url):
     if match:
         return match.group(1)
     return None
+
+
+def extract_coordinates(data):
+    link = safe_get(data, 6, 42)
+    # Regular expression pattern to match coordinates in the link
+    pattern = r'@(-?\d+\.\d+),(-?\d+\.\d+)'
+
+    # Find coordinates in the link using regular expression
+    match = rex.search(pattern, link)
+
+    if match:
+        # Extract latitude and longitude from the matched groups
+        latitude = float(match.group(1))
+        longitude = float(match.group(2))
+        return latitude, longitude
+    else:
+        return None
 
 
 def find_most_common_element(ls):
@@ -232,56 +273,79 @@ def check_data(data):
 def get_detailed_reviews(data):
     reviews = []
     data = safe_get(data, 6, 52, 0)
-    for r in data:
-        r_data = {
-            'reviewer': safe_get(r, 0, 1),
-            'reviewer_image': safe_get(r, 0, 0),
-            'review': safe_get(r, 3)
-        }
-
-        reviews.append(r_data)
+    if data is not None:
+        for r in data:
+            r_data = {
+                'reviewer': safe_get(r, 0, 1),
+                'reviewer_image': safe_get(r, 0, 0),
+                'review': safe_get(r, 3)
+            }
+            reviews.append(r_data)
     return reviews
 
 
 def extract_data(input_str, link):
-    data = parse(input_str)
-    # 157 icon
-    # 171 image
-    # check_data(data[6][171][0][0][3][0][6])
 
-    all_images = []
-    all_images.append(get_images_0(data))
-    all_images.append(get_images_1(data))
-    all_images.append(get_images_2(data))
-    all_images.append(get_images_3(data))
-    images = '{' + ', '.join(map(str, set(all_images))) + '}'
+    try:
+        data = parse(input_str)
 
-    categories = get_categories(data)
-    place_id = get_place_id(data)
-    title = get_title(data)
-    rating = get_rating(data)
-    reviews = get_reviews(data)
-    address = get_address(data)
-    website = get_website(data)
-    main_category = get_main_category(data)
-    about = get_about(data)
-    featured_image = get_feautured_image(data)
-    phone = get_phone(data)
-    detailed_reviews = get_detailed_reviews(data)
+        # check_data(data[6][110])
 
-    return {
-        'place_id': place_id,
-        'name': title,
-        'link': link,
-        'main_category': main_category,
-        'categories': categories,
-        'rating': rating,
-        'reviews': reviews,
-        'address': address,
-        'website': website,
-        'about': about,
-        'featured_image': featured_image,
-        'phone': phone,
-        'all_images': images,
-        'detailed_reviews': detailed_reviews,
-    }
+        all_images = []
+        all_images.append(get_images_0(
+            data) if get_images_0(data) is not None else 'no_image')
+        all_images.append(get_images_1(
+            data) if get_images_1(data) is not None else 'no_image')
+        all_images.append(get_images_2(
+            data) if get_images_2(data) is not None else 'no_image')
+        all_images.append(get_images_3(
+            data) if get_images_3(data) is not None else 'no_image')
+        images = '{' + ', '.join(map(str, set(all_images))) + '}'
+
+        categories = get_categories(data)
+        place_id = get_place_id(data)
+        title = get_title(data)
+        rating = get_rating(data)
+        reviews = get_reviews(data)
+        address = get_address(data)
+        website = get_website(data)
+        main_category = get_main_category(data)
+        about = get_about(data)
+        featured_image = get_feautured_image(data)
+        phone = get_phone(data)
+        detailed_reviews = get_detailed_reviews(data)
+        workday_timing = get_workding_days(data)
+        time_zone = get_time_zone(data)
+        location = get_location(data)
+        lat = extract_coordinates(data)[0]
+        long = extract_coordinates(data)[1]
+        icon = get_icon(data)
+        lang_long = get_lang_long(data)
+        lang_short = get_lang_short(data)
+
+        return {
+            'place_id': place_id,
+            'name': title,
+            'link': link,
+            'main_category': main_category,
+            'categories': categories,
+            'rating': rating,
+            'reviews': reviews,
+            'address': address,
+            'website': website,
+            'about': about,
+            'featured_image': featured_image,
+            'phone': phone,
+            'all_images': images,
+            'detailed_reviews': detailed_reviews,
+            'workday_timing': workday_timing,
+            'time_zone': time_zone,
+            'location': location,
+            'latitude': lat,
+            'Longitude': long,
+            'lang_long': lang_long,
+            'lang_short': lang_short,
+        }
+    except Exception as e:
+        print(f"error in extract_data: {e}")
+        pass

@@ -240,6 +240,21 @@ def transform_places(places, fields):
             elif field == Fields.ALL_IMAGES:
                 transformed_place[Fields.ALL_IMAGES] = place[Fields.ALL_IMAGES]
 
+            elif field == Fields.TIME_ZONE:
+                transformed_place[Fields.TIME_ZONE] = place[Fields.TIME_ZONE]
+
+            elif field == Fields.WORKDAY_TIMING:
+                transformed_place[Fields.WORKDAY_TIMING] = place[Fields.WORKDAY_TIMING]
+
+            elif field == Fields.LOCATION:
+                transformed_place[Fields.LOCATION] = place[Fields.LOCATION]
+
+            elif field == Fields.LANG_LONG:
+                transformed_place[Fields.LANG_LONG] = place[Fields.LANG_LONG]
+
+            elif field == Fields.LANG_SHORT:
+                transformed_place[Fields.LANG_SHORT] = place[Fields.LANG_SHORT]
+
             elif field == Fields.DETAILED_REVIEWS:
                 transformed_place[Fields.DETAILED_REVIEWS] = place[Fields.DETAILED_REVIEWS]
 

@@ -1,37 +1,38 @@
 import datetime
-import sys
 import requests
 import json
 
 
 def post_topics(data):
-
-    # print(data)
-    # print(places)
-    # sys.exit()
     try:
         # Replace 'your_api_endpoint' with the actual endpoint URL
         api_endpoint = 'http://localhost:3000/api/post/post_topics'
-
-        # Your data to be sent in the POST request
-
         post_data = []
 
         for item in data:
             try:
+                query = str(item.get("query")).replace('"', "").strip()
+
+                if not query:
+                    continue
+
                 d = {
-                    'title': item["query"],
-                    'description': f'This is like of {item["query"]} in Nigeria as of year',
-                    'body': f'This is like of {item["query"]} in Nigeria as of year',
-                    'createdAt': str(datetime.datetime.now()),
-                    'topId': f'{{top}}',
+                    'title': query,
+                    'description': f'This is list of {query}',
+                    'body': f'This is list of {query}',
+                    'createdAt': datetime.datetime.now().isoformat(),
+                    'topId': '{top}',
                     'image': '',
                     'selectedImage': '',
-                    'lists': item["places"]
+                    'lists': item.get("places")
                 }
-                post_data.append(d)
+                if len(item.get("places")) >= 1:
+                    print(f"""{len(item.get("places"))
+                               } lists appended to {query}""")
+                    post_data.append(d)
+
             except Exception as e:
-                print(f"Error processing item {item}: {str(e)}")
+                print(f"Error processing item: {str(e)}")
 
         data_to_send = {
             'postData': post_data,
@@ -39,21 +40,18 @@ def post_topics(data):
             'update': True,
             'source': "gmap",
         }
-        # Convert the data to JSON format (if needed)
 
         json_data = json.dumps(data_to_send)
-
-        # Set the headers if sending JSON data
         headers = {'Content-Type': 'application/json'}
 
-        # Make the POST request
         response = requests.post(api_endpoint, data=json_data, headers=headers)
 
-        # Check the response status and print the result
         if response.status_code == 200:
             return {'success': True, 'data': response.json()}
         else:
             return {'success': False, 'message': response.text}
 
+    except requests.exceptions.RequestException as e:
+        return {'success': False, 'message': f"Request failed: {str(e)}"}
     except Exception as e:
-        return {'success': False, 'message': str(e)}
+        return {'success': False, 'message': f"An error occurred: {str(e)}"}
