@@ -11,7 +11,8 @@ def post_topics(data):
 
         for item in data:
             try:
-                query = str(item.get("query")).replace('"', "").strip()
+                query = str(item.get("query")).replace(
+                    '"', "").replace(',', '').strip()
 
                 if not query:
                     continue

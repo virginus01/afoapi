@@ -15,8 +15,8 @@ class Generate:
 
     @staticmethod
     def generate_tops_in_country():
-        stop = True
-        if stop is True:
+        active = True
+        if active is True:
             try:
                 # Get the directory of the script
                 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +38,7 @@ class Generate:
                     random.shuffle(cat_data)
                     random.shuffle(data)
                     n = 0
+                    biz_location = {}
 
                     for country in data:
 
@@ -62,8 +63,8 @@ class Generate:
 
                                         print(queries)
                                         Gmaps.places(
-                                            queries, max=3, lang=Lang.English, scrape_reviews=True)
-                                        sys.exit()
+                                            queries, max=57, lang=Lang.English, scrape_reviews=True)
+
                                         n += 1
 
                 except json.JSONDecodeError as e:
@@ -74,4 +75,7 @@ class Generate:
                 print("An error occurred:", e)
                 pass
             finally:
-                time.sleep(5)
+                time.sleep(3)
+        else:
+            print("stopped")
+            pass

@@ -1,8 +1,8 @@
 import sys
 from botasaurus import bt
 from typing import List, Optional, Dict
+from src.post_topic import post_topic
 from src import scraper
-from src.send_to_server import post_topics
 from src.write_output import write_output
 from src.sort_filter import filter_places, sort_places
 from .cities import Cities
@@ -368,10 +368,9 @@ class Gmaps:
                     'query': result_item["query"],
                     'places': result_item["places"],
                 }
+                post = post_topic(post_item)
                 post_result.append(post_item)
                 result.append(result_item)
-            post = post_topics(post_result)
-            print(post)
             scraper.scrape_places.close()
             return result
         except Exception as e:

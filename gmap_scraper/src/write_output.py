@@ -255,6 +255,12 @@ def transform_places(places, fields):
             elif field == Fields.LANG_SHORT:
                 transformed_place[Fields.LANG_SHORT] = place[Fields.LANG_SHORT]
 
+            elif field == Fields.COUNTRY:
+                transformed_place[Fields.COUNTRY] = place[Fields.COUNTRY]
+
+            elif field == Fields.ICON:
+                transformed_place[Fields.ICON] = place[Fields.ICON]
+
             elif field == Fields.DETAILED_REVIEWS:
                 transformed_place[Fields.DETAILED_REVIEWS] = place[Fields.DETAILED_REVIEWS]
 

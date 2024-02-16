@@ -35,6 +35,7 @@ class Fields:
     LOCATION = "location"
     LANG_LONG = "lang_long"
     LANG_SHORT = "lang_short"
+    COUNTRY = "country"
 
     STATUS = "status"
     PRICE_RANGE = "price_range"
@@ -55,6 +56,7 @@ class Fields:
     ABOUT = "about"
     IMAGES = "images"
     ALL_IMAGES = 'all_images'
+    ICON = 'ICON'
     HOURS = "hours"
     MOST_POPULAR_TIMES = "most_popular_times"
     POPULAR_TIMES = "popular_times"
@@ -84,6 +86,8 @@ DEFAULT_FIELDS_WITHOUT_SOCIAL_DATA = [
     Fields.LOCATION,
     Fields.LANG_LONG,
     Fields.LANG_SHORT,
+    Fields.COUNTRY,
+    Fields.ICON,
 ]
 
 DEFAULT_SOCIAL_FIELDS = [

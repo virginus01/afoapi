@@ -124,23 +124,40 @@ def get_feautured_image(data):
 
 
 def get_images_0(data):
-    return safe_get(data, 6, 171, 0, 0, 3, 0, 6, 0)
+    image = safe_get(data, 6, 171, 0, 0, 3, 0, 6, 0)
+    if image is None:
+        return ''
+    else:
+        return image
 
 
 def get_images_1(data):
-    return safe_get(data, 6, 171, 0, 1, 3, 0, 6, 0)
+    image = safe_get(data, 6, 171, 0, 1, 3, 0, 6, 0)
+    if image is None:
+        return ''
+    else:
+        return image
 
 
 def get_images_2(data):
-    return safe_get(data, 6, 171, 0, 2, 3, 0, 6, 0)
+    image = safe_get(data, 6, 171, 0, 2, 3, 0, 6, 0)
+    if image is None:
+        return ''
+    else:
+        return image
 
 
 def get_images_3(data):
-    return safe_get(data, 6, 171, 0, 3, 3, 0, 6, 0)
+
+    image = safe_get(data, 6, 171, 0, 3, 3, 0, 6, 0)
+    if image is None:
+        return ''
+    else:
+        return image
 
 
 def get_workding_days(data):
-    return safe_get(data, 6, 34)
+    return safe_get(data, 6, 203, 0)
 
 
 def get_time_zone(data):
@@ -161,6 +178,10 @@ def get_lang_long(data):
 
 def get_lang_short(data):
     return safe_get(data, 6, 110)
+
+
+def get_country(data):
+    return safe_get(data, 6, 243)
 
 
 def parse(data):
@@ -288,19 +309,13 @@ def extract_data(input_str, link):
 
     try:
         data = parse(input_str)
+        # if data[6][203][0] is not None:
+        # check_data(data[6][203][0])
+        # print(get_workding_days(data))
+        # sys.exit()
 
-        # check_data(data[6][110])
-
-        all_images = []
-        all_images.append(get_images_0(
-            data) if get_images_0(data) is not None else 'no_image')
-        all_images.append(get_images_1(
-            data) if get_images_1(data) is not None else 'no_image')
-        all_images.append(get_images_2(
-            data) if get_images_2(data) is not None else 'no_image')
-        all_images.append(get_images_3(
-            data) if get_images_3(data) is not None else 'no_image')
-        images = '{' + ', '.join(map(str, set(all_images))) + '}'
+        all_images = f"{get_images_0(data)}, {get_images_1(data)}, {
+            get_images_2(data)}, {get_images_3(data)}"
 
         categories = get_categories(data)
         place_id = get_place_id(data)
@@ -322,6 +337,7 @@ def extract_data(input_str, link):
         icon = get_icon(data)
         lang_long = get_lang_long(data)
         lang_short = get_lang_short(data)
+        country = get_country(data)
 
         return {
             'place_id': place_id,
@@ -336,15 +352,17 @@ def extract_data(input_str, link):
             'about': about,
             'featured_image': featured_image,
             'phone': phone,
-            'all_images': images,
+            'all_images': all_images,
             'detailed_reviews': detailed_reviews,
             'workday_timing': workday_timing,
             'time_zone': time_zone,
             'location': location,
             'latitude': lat,
-            'Longitude': long,
+            'longitude': long,
             'lang_long': lang_long,
             'lang_short': lang_short,
+            'country': country,
+            'icon': icon,
         }
     except Exception as e:
         print(f"error in extract_data: {e}")
