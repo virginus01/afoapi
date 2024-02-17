@@ -426,9 +426,8 @@ def custom_slugify(text, separator="-", filter_top="yes"):
 
     # Additional cleaning
     slug = re.sub(r"{[^}]*}", "", slug)
-    slug = re.sub(r"[^\w-]+", "", slug)
+    slug = re.sub(r"[^\w-]+", "-", slug)
     slug = slug.strip("-").replace("-+", "-").lower().strip()
-
     return slug
 
 

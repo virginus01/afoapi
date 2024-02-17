@@ -310,7 +310,7 @@ def extract_data(input_str, link):
     try:
         data = parse(input_str)
         # if data[6][203][0] is not None:
-        # check_data(data[6][203][0])
+        # check_data(data[6])
         # print(get_workding_days(data))
         # sys.exit()
 

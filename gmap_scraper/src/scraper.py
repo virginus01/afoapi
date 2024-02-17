@@ -1,4 +1,5 @@
 import json
+import sys
 from botasaurus import *
 from hashlib import md5
 from botasaurus import cl
@@ -29,7 +30,7 @@ def process_reviews(reviews, convert_to_english):
 
         processed_review = {
             "review_id_hash": md5(review.get("review_id").encode('utf-8')).hexdigest(),
-            "rating": int(review.get("rating")),
+            "rating": review.get("rating"),
             "review_text": review.get("text"),
             "published_at": review.get("relative_date"),
             "published_at_date": review.get("text_date"),
@@ -38,9 +39,12 @@ def process_reviews(reviews, convert_to_english):
             "response_from_owner_date": review.get("response_text_date"),
             "review_likes_count": 0 if lk == -1 else lk,
             "total_number_of_reviews_by_reviewer": number_of_reviews_by_reviewer,
+            "user_url": review.get("user_url"),
+            "user_name": review.get("user_name"),
             "total_number_of_photos_by_reviewer": number_of_photos_by_reviewer,
             "is_local_guide": review.get("user_is_local_guide"),
             "review_translated_text": review.get("translated_text"),
+            "user_photos": review.get("user_photos"),
             "response_from_owner_translated_text": review.get("translated_response_text"),
             # "extracted_at": review.get("retrieval_date")
         }
