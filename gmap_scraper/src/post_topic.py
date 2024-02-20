@@ -53,19 +53,20 @@ def add_topic(data):
 
         if item_details is not None:
             _id = item_details["_id"]
+            topic_slug = item_details["slug"]
             data["_id"] = _id
             query_filter = {'_id': data["_id"]}
             new_data = {'$set': data}
             del new_data["$set"]["lists"]
             result = col.update_one(query_filter, new_data)
-            list_result = asyncio.run(add_list(lists, _id))
+            list_result = asyncio.run(add_list(lists, _id, topic_slug))
         else:
             _id = ObjectId()
             data["_id"] = _id
             new_data = data.copy()
             del new_data["lists"]
             result = col.insert_one(new_data)
-            list_result = asyncio.run(add_list(lists, _id))
+            list_result = asyncio.run(add_list(lists, _id, data["topic_slug"]))
 
     except Exception as e:
         print(f"Error topic: {e}")
@@ -73,7 +74,7 @@ def add_topic(data):
         pass
 
 
-async def add_list(data, topic_id):
+async def add_list(data, topic_id, topic_slug):
 
     try:
         for item in data:
@@ -102,6 +103,7 @@ async def add_list(data, topic_id):
 
             l_data = {
                 "topicId": str(topic_id),
+                "topic_slug": topic_slug,
                 "title": str(g_title).strip(),
                 "is_english": language_code,
                 "subTitle": item["name"].strip(),
@@ -248,6 +250,19 @@ def generate_list_position(topicId):
             query_filter = {'_id': item["_id"]}
             new_data = {'$set': {'position': index + 1}}
             result = col.update_one(query_filter, new_data)
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
+        pass
+
+
+def get_topics_for_video(topicId):
+    try:
+        db = get_database()
+        col = db["topics"]
+        item_details = col.find(
+            {'type': "blog"}).sort('rankingScore', pymongo.DESCENDING)
+
     except Exception as e:
         print(e)
         traceback.print_exc()
