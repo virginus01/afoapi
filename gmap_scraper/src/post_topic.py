@@ -8,7 +8,7 @@ from bson.int64 import Int64
 import pymongo
 from src.helpers import custom_slugify, is_english, re_write_text
 from lib.mongodb import get_database
-from pymongo import MongoClient
+from pymongo import MongoClient, UpdateOne
 import requests
 import json
 import traceback
@@ -26,8 +26,9 @@ def post_topic(data):
             'metaTitle': f"Best: Top {{top}} {query}",
             'description': f'This is list of {query}',
             'metaDescription': f"Welcome to the best {{top}} {query}. This is top {{top}} {query} currently",
-            'slug': custom_slugify(query),
-            'body': f'This is bussiness the list of the top {{top}} {query}',
+            'slug': custom_slugify(f"{query}"),
+            'top_slug': custom_slugify(top["slug"]),
+            'body': f'This is a bussiness the list of the top {{top}} {query}',
             'createdAt': datetime.datetime.now().isoformat(),
             'topId': str(top["_id"]),
             'type': "gmap_businesses",
@@ -47,9 +48,11 @@ def post_topic(data):
 def add_topic(data):
     lists = data["lists"]
     try:
+        processed_lists = []
         db = get_database()
         col = db["topics"]
         item_details = col.find_one({'slug': data["slug"]})
+        _id = ObjectId()
 
         if item_details is not None:
             _id = item_details["_id"]
@@ -59,26 +62,35 @@ def add_topic(data):
             new_data = {'$set': data}
             del new_data["$set"]["lists"]
             result = col.update_one(query_filter, new_data)
-            list_result = asyncio.run(add_list(lists, _id, topic_slug))
+            get_processed_lists = asyncio.run(
+                process_list(lists, _id, topic_slug))
+            for li in get_processed_lists:
+                processed_lists.append(li)
         else:
-            _id = ObjectId()
             data["_id"] = _id
-            new_data = data.copy()
+            new_data = data
             del new_data["lists"]
             result = col.insert_one(new_data)
-            list_result = asyncio.run(add_list(lists, _id, data["topic_slug"]))
+            get_processed_lists = asyncio.run(
+                process_list(lists, new_data["_id"], new_data["slug"]))
+            for li in get_processed_lists:
+                processed_lists.append(li)
 
+        asyncio.run(add_list(processed_lists))
+        generate_list_position(_id)
+        print(f"{data["title"]} added to topic")
     except Exception as e:
         print(f"Error topic: {e}")
         traceback.print_exc()
         pass
 
 
-async def add_list(data, topic_id, topic_slug):
+async def process_list(data, topic_id, topic_slug):
 
     try:
+        processed_lists = []
         for item in data:
-            reviews = item["detailed_reviews"]
+            reviews = item["all_reviews"]
 
             pattern = re.compile(r'([^>:|-]+)\s*(?:>|\:|\-|\||\,|$)')
             match = pattern.search(item["name"])
@@ -133,36 +145,48 @@ async def add_list(data, topic_id, topic_slug):
                 "longitude": item["longitude"],
                 "lang_long": item["lang_long"],
                 "lang_short": item["lang_short"],
-                # "icon": item["icon"],
-                "status": "published"
+                "icon": item["icon"],
+                "status": "published",
+                "all_reviews": item["all_reviews"]
             }
 
-            db = get_database()
-            col = db["lists"]
-            item_details = col.find_one({'place_id': l_data["place_id"]})
+            processed_lists.append(l_data)
 
-            if item_details is not None:
-                query_filter = {'place_id': l_data["place_id"]}
-                new_data = {'$set': l_data}
-                del new_data["$set"]["detailed_reviews"]
-                result = col.update_one(query_filter, new_data)
-                review_result = await add_reviews(reviews, item_details["_id"])
-            else:
-                _id = ObjectId()
-                l_data["_id"] = _id
-                new_data = l_data.copy()
-                del new_data["detailed_reviews"]
-                result = col.insert_one(new_data)
-                review_result = await add_reviews(reviews, _id)
-            generate_list_position(topic_id)
+        return processed_lists
     except Exception as e:
         print(f"Error list: {str(e)}")
         traceback.print_exc()
         pass
 
 
-async def add_reviews(data, list_id):
+async def add_list(data):
+
     try:
+        bulk = []
+        processed_reviews = []
+        db = get_database()
+        col = db["lists"]
+        for item in data:
+            reviews = item["all_reviews"]
+            query_filter = {'place_id': item["place_id"]}
+            new_data = {'$set': item}
+            del new_data["$set"]["all_reviews"]
+            bulk.append(UpdateOne(query_filter, new_data, upsert=True))
+            get_processed_reviews = await process_reviews(reviews, item["place_id"])
+            for rev in get_processed_reviews:
+                processed_reviews.append(rev)
+        col.bulk_write(bulk, ordered=False)
+        await add_reviews(processed_reviews)
+        print(f"{len(processed_reviews)} reviews added to {len(data)} lists")
+    except Exception as e:
+        print(f"Error list: {str(e)}")
+        traceback.print_exc()
+        pass
+
+
+async def process_reviews(data, list_id):
+    try:
+        reviews = []
         for item in data:
             lang = is_english(item["review_text"])
             if lang == True:
@@ -172,6 +196,7 @@ async def add_reviews(data, list_id):
 
             t_data = {
                 "list_id": str(list_id),
+                "place_id": str(list_id),
                 "is_english": language_code,
                 "review_id_hash": item["review_id_hash"],
                 "rating": item["rating"],
@@ -191,30 +216,35 @@ async def add_reviews(data, list_id):
                 "review_translated_text": item["review_translated_text"],
                 "response_from_owner_translated_text": item["response_from_owner_translated_text"]
             }
-
-            db = get_database()
-            col = db["reviews"]
-            item_details = col.find_one(
-                {'review_id_hash': t_data["review_id_hash"]})
-
-            if item_details is not None:
-                query_filter = {'review_id_hash': t_data["review_id_hash"]}
-                new_data = {'$set': t_data}
-                result = col.update_one(query_filter, new_data)
-            else:
-                _id = ObjectId()
-                t_data["_id"] = _id
-                result = col.insert_one(t_data)
+            reviews.append(t_data)
+        return reviews
     except Exception as e:
         print(f"Error review: {str(e)}")
         traceback.print_exc()
         pass
 
 
+async def add_reviews(data):
+    try:
+        bulk = []
+        db = get_database()
+        col = db["reviews"]
+
+        for item in data:
+            query_filter = {'review_id_hash': item["review_id_hash"]}
+            new_data = {'$set': item}
+            bulk.append(UpdateOne(query_filter, new_data, upsert=True))
+        col.bulk_write(bulk, ordered=False)
+    except Exception as e:
+        print(f"Error review: {str(e)}")
+        traceback.print_exc()
+
+
 async def find_nearest_top(length):
     try:
-        if length < 5:
-            length = 5
+        if length <= 2:
+            length = 2
+
         tops = await get_tops()
 
         nearest_item = min(

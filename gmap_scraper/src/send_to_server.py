@@ -1,4 +1,5 @@
 import datetime
+import os
 import requests
 import json
 
@@ -6,7 +7,7 @@ import json
 def post_topics(data):
     try:
         # Replace 'your_api_endpoint' with the actual endpoint URL
-        api_endpoint = 'http://localhost:3000/api/post/post_topics'
+        api_endpoint = os.getenv("MONGODB_URL")
         post_data = []
 
         for item in data:

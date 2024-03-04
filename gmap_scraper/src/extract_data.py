@@ -1,9 +1,11 @@
+from hashlib import md5
 import random
 import re as rex
 import json
 from datetime import datetime
 import string
 import sys
+import traceback
 
 from src.scraper_utils import create_search_link
 
@@ -281,27 +283,84 @@ def check_data(data):
         with open(f'output.txt', 'a', encoding='utf-8') as file:
             for key in data:
                 if key is not None:
-                    output_line = f"key: {n} {str([key])}\n"
-                    print(
-                        output_line+"------------------------------------------------------------------------------")
+                    output_line = f"key: {n} {str(
+                        [key])}\n\n\\n\n"
+                    print(output_line)
                     file.write(output_line)
                 n += 1
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-    sys.exit()
+
+
+def safe_get2(data, *keys):
+    with open('output.txt', 'a', encoding='utf-8') as file:
+        for n, key in enumerate(keys):
+            file.write(f"\n\n\n\nINIKEY: {n}\n\n\n")
+            try:
+                data = data[key]
+                for i, item in enumerate(data):
+                    if item is not None:
+                        output_line = f"key: {i} {str([item])}\n\n\n\n\n"
+                        file.write(output_line)
+            except (IndexError, TypeError, KeyError):
+                pass  # Continue with the next key even if an exception occurs
+    return data
+
+
+def safe_get(data, *keys):
+    for key in keys:
+        try:
+            data = data[key]
+        except (IndexError, TypeError, KeyError):
+            return None
+    return data
 
 
 def get_detailed_reviews(data):
     reviews = []
-    data = safe_get(data, 6, 52, 0)
+    data = safe_get(data, 6, 175, 9, 0, 0)
+
     if data is not None:
         for r in data:
-            r_data = {
-                'reviewer': safe_get(r, 0, 1),
-                'reviewer_image': safe_get(r, 0, 0),
-                'review': safe_get(r, 3)
-            }
-            reviews.append(r_data)
+            if r is not None:
+                # check_data(safe_get(r, 0))
+
+                year = safe_get(r, 0, 2, 2, 0, 1, 21, 6, 8, 0)
+                month = safe_get(r, 0, 2, 2, 0, 1, 21, 6, 8, 1)
+                day = safe_get(r, 0, 2, 2, 0, 1, 21, 6, 8, 2)
+                # Get today's date
+                today = datetime.today()
+
+                # Assign today's date to year, month, or day if any of them are None
+                if year is None:
+                    year = today.year
+                if month is None:
+                    month = today.month
+                if day is None:
+                    day = today.day
+
+                r_data = {
+                    "review_id_hash": safe_get(r, 0, 5),
+                    'user_name': safe_get(r, 0, 1, 4, 0, 4),
+                    # 'review_language': safe_get(r, 1, 1),
+                    'review_text': safe_get(r, 0, 2, 1, 0),
+                    "published_at_date": f"{month}-{day}-{year}",
+                    # 'rating': safe_get(r, 1, 8, 1)
+                    "rating": "5.0",
+                    "published_at": "",
+                    "response_from_owner_text": "",
+                    "response_from_owner_ago": "",
+                    "response_from_owner_date": "",
+                    "review_likes_count": "",
+                    "total_number_of_reviews_by_reviewer": "",
+                    "user_url": "",
+                    "total_number_of_photos_by_reviewer": "",
+                    "is_local_guide": "",
+                    "review_translated_text": "",
+                    "user_photos": "",
+                    "response_from_owner_translated_text": "",
+                }
+                reviews.append(r_data)
     return reviews
 
 
@@ -309,9 +368,7 @@ def extract_data(input_str, link):
 
     try:
         data = parse(input_str)
-        # if data[6][203][0] is not None:
-        # check_data(data[6])
-        # print(get_workding_days(data))
+        # (get_detailed_reviews(data))
         # sys.exit()
 
         all_images = f"{get_images_0(data)}, {get_images_1(data)}, {
@@ -353,6 +410,7 @@ def extract_data(input_str, link):
             'featured_image': featured_image,
             'phone': phone,
             'all_images': all_images,
+            'all_reviews': detailed_reviews,
             'detailed_reviews': detailed_reviews,
             'workday_timing': workday_timing,
             'time_zone': time_zone,
@@ -365,5 +423,5 @@ def extract_data(input_str, link):
             'icon': icon,
         }
     except Exception as e:
-        print(f"error in extract_data: {e}")
+        traceback.print_exc()
         pass

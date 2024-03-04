@@ -1,5 +1,6 @@
 import re
 from langdetect import detect
+import unidecode
 
 
 def is_english(text):
@@ -30,6 +31,12 @@ def re_write_text(data):
     lists = re.sub(r'\bwe\b', 'they', lists)
 
     return lists
+
+
+def remove_non_english_characters(slug):
+    # Remove any characters that are not in the English alphabet, digits, or hyphen
+    cleaned_slug = re.sub(r'[^a-zA-Z0-9-]', ' ', unidecode.unidecode(slug))
+    return cleaned_slug
 
 
 def custom_slugify(text, separator="-", filter_top="yes"):
@@ -407,10 +414,12 @@ def custom_slugify(text, separator="-", filter_top="yes"):
         "y",
         "z",
         "plz",
+        "&",
     ]
 
     # Split into words
     text = strip_html_tags(text)
+    text = remove_non_english_characters(text)
     words = text.split(" ")
 
     # Filter stop words
@@ -428,6 +437,7 @@ def custom_slugify(text, separator="-", filter_top="yes"):
     slug = re.sub(r"{[^}]*}", "", slug)
     slug = re.sub(r"[^\w-]+", "-", slug)
     slug = slug.strip("-").replace("-+", "-").lower().strip()
+    slug = slug.replace("--", "-")
     return slug
 
 

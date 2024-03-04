@@ -63,8 +63,8 @@ class Generate:
 
                                         print(queries)
                                         Gmaps.places(
-                                            queries, max=57, lang=Lang.English, scrape_reviews=True)
-
+                                            queries, max=2, lang=Lang.English, scrape_reviews=False)
+                                        # sys.exit()
                                         n += 1
 
                 except json.JSONDecodeError as e:

@@ -264,6 +264,9 @@ def transform_places(places, fields):
             elif field == Fields.DETAILED_REVIEWS:
                 transformed_place[Fields.DETAILED_REVIEWS] = place[Fields.DETAILED_REVIEWS]
 
+            elif field == Fields.ALL_REVIEWS:
+                transformed_place[Fields.ALL_REVIEWS] = place[Fields.ALL_REVIEWS]
+
             elif field == Fields.STATUS:
                 transformed_place[Fields.STATUS] = place[Fields.STATUS]
 

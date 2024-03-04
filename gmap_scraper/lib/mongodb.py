@@ -1,20 +1,31 @@
+import os
+import sys
+import certifi
+from dotenv import load_dotenv
 from pymongo import MongoClient
+
+client = None
 
 
 def get_database():
+    try:
+        load_dotenv()
+        global client  # Declare client as global to modify it within the function
+        db_url = os.getenv("MONGODB_URL_LOCAL")
 
-    # Provide the mongodb atlas url to connect python to mongodb using pymongo
-    CONNECTION_STRING = "mongodb://localhost:27017/topingnow"
+        # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
+        if client is None:
+            # client = MongoClient(db_url, tlsCAFile=certifi.where())
+            client = MongoClient(db_url)
 
-    # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
-    client = MongoClient(CONNECTION_STRING)
-
-    # Create the database for our example (we will use the same database throughout the tutorial
-    return client['topingnow']
+        # Create the database for our example (we will use the same database throughout the tutorial)
+        return client['topingnow']
+    except Exception as e:
+        print(f"mongodb connection failed: {e}")
+        sys.exit()
 
 
 # This is added so that many files can reuse the function get_database()
 if __name__ == "__main__":
-
     # Get the database
     dbname = get_database()
