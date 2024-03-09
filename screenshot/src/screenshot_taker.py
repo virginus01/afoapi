@@ -1,5 +1,6 @@
 import base64
 from io import BytesIO
+import traceback
 from botasaurus import AntiDetectDriver, browser
 from PIL import Image
 from django.http import HttpResponse, JsonResponse
@@ -41,7 +42,7 @@ def take_screenshot(driver: AntiDetectDriver, request):
 
     except Exception as e:
         print(f"An error occurred: {e}")
-
+        traceback.print_exc()
     finally:
         # Close the browser window
         driver.quit()
@@ -65,7 +66,6 @@ def save_screenshot(driver: AntiDetectDriver, data):
     try:
         # Open the URL
         driver.get(data["url"])
-        driver.click()
         path = f"output/screenshots/{data["slug"]}.png"
         driver.set_window_size(1920, 1080,)
         driver.save_screenshot(data["slug"])
@@ -74,7 +74,8 @@ def save_screenshot(driver: AntiDetectDriver, data):
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        driver.quit()
+        # driver.quit()
+        traceback.print_exc()
         return {'path': ''}
     finally:
         # Close the browser window
@@ -85,11 +86,10 @@ def save_screenshot(driver: AntiDetectDriver, data):
 def upload_image_to_s3(file_path, bucket_name, s3_key):
     # Create an S3 client
     s3 = boto3.client('s3')
-
     # Upload file to S3 bucket
     try:
         s3.upload_file(file_path, bucket_name, s3_key)
-        print(f"{s3_key} upload Successful")
+        # print(f"{s3_key} upload Successful")
     except FileNotFoundError as e:
         print(f"The file was not found {e}")
     except ConnectionError as exc:

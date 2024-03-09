@@ -1,5 +1,6 @@
 import datetime
 import os
+import traceback
 import requests
 import json
 
@@ -56,4 +57,5 @@ def post_topics(data):
     except requests.exceptions.RequestException as e:
         return {'success': False, 'message': f"Request failed: {str(e)}"}
     except Exception as e:
+        traceback.print_exc()
         return {'success': False, 'message': f"An error occurred: {str(e)}"}

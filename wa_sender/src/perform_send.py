@@ -1,5 +1,6 @@
 
 import time
+import traceback
 from botasaurus import AntiDetectDriver, browser
 
 
@@ -43,6 +44,7 @@ def click_and_send(driver: AntiDetectDriver, request):
 
     except Exception as e:
         print(f"An error occurred: {e}")
+        traceback.print_exc()
 
     finally:
         # Close the browser window

@@ -1,4 +1,4 @@
-from src.utils import kebab_case, unicode_to_ascii
+from ..src.utils import kebab_case, unicode_to_ascii
 
 
 def sort_place(places: list, sort):

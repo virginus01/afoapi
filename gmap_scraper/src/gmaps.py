@@ -1,10 +1,10 @@
 import sys
 from botasaurus import bt
 from typing import List, Optional, Dict
-from src.post_topic import post_topic
-from src import scraper
-from src.write_output import write_output
-from src.sort_filter import filter_places, sort_places
+from .post_topic import post_topic
+from ..src import scraper
+from ..src.write_output import write_output
+from ..src.sort_filter import filter_places, sort_places
 from .cities import Cities
 from .lang import Lang
 from .category import Category
@@ -316,6 +316,7 @@ class Gmaps:
                scrape_reviews: bool = False,
                reviews_max: int = 20,
                reviews_sort: int = NEWEST,
+               topic_category: str = "",
                fields: Optional[List[str]] = DEFAULT_FIELDS,
                lang: Optional[str] = None,
                geo_coordinates: Optional[str] = None,
@@ -367,6 +368,7 @@ class Gmaps:
                 post_item = {
                     'query': result_item["query"],
                     'places': result_item["places"],
+                    'topic_category': topic_category,
                 }
                 post = post_topic(post_item)
                 post_result.append(post_item)

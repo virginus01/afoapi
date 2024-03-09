@@ -4,9 +4,9 @@ from botasaurus import *
 from hashlib import md5
 from botasaurus import cl
 from botasaurus.cache import DontCache
-from src.extract_data import extract_data, perform_extract_possible_map_link
-from src.scraper_utils import create_search_link, perform_visit
-from src.utils import convert_unicode_dict_to_ascii_dict, unique_strings
+from ..src.extract_data import extract_data, perform_extract_possible_map_link
+from ..src.scraper_utils import create_search_link, perform_visit
+from ..src.utils import convert_unicode_dict_to_ascii_dict, unique_strings
 from .reviews_scraper import GoogleMapsAPIScraper
 from time import sleep, time
 from botasaurus.utils import retry_if_is_error

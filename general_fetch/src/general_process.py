@@ -1,6 +1,7 @@
 
 import json
 import random
+import traceback
 from lib.mongodb import get_database
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
@@ -71,3 +72,4 @@ class Generate:
 
         except Exception as e:
             print("An error occurred:", e)
+            traceback.print_exc()

@@ -3,9 +3,9 @@ from botasaurus.decorators_utils import create_directory_if_not_exists
 from botasaurus.decorators import print_filenames
 from botasaurus import bt
 
-from src.fields import Fields
-from src.send_to_server import post_topics
-from src.utils import kebab_case, sort_dict_by_keys, unicode_to_ascii
+from ..src.fields import Fields
+from ..src.send_to_server import post_topics
+from ..src.utils import kebab_case, sort_dict_by_keys, unicode_to_ascii
 
 
 def make_folders(query_kebab):
@@ -260,6 +260,9 @@ def transform_places(places, fields):
 
             elif field == Fields.ICON:
                 transformed_place[Fields.ICON] = place[Fields.ICON]
+
+            elif field == Fields.AMENITIES:
+                transformed_place[Fields.AMENITIES] = place[Fields.AMENITIES]
 
             elif field == Fields.DETAILED_REVIEWS:
                 transformed_place[Fields.DETAILED_REVIEWS] = place[Fields.DETAILED_REVIEWS]

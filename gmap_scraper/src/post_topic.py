@@ -1,12 +1,13 @@
 import asyncio
 import datetime
 import os
+import random
 import re
 import sys
 from bson import ObjectId
 from bson.int64 import Int64
 import pymongo
-from src.helpers import custom_slugify, is_english, re_write_text
+from .helpers import custom_slugify, is_english, re_write_text
 from lib.mongodb import get_database
 from pymongo import MongoClient, UpdateOne
 import requests
@@ -16,10 +17,12 @@ import traceback
 
 def post_topic(data):
     try:
-        top = asyncio.run(find_nearest_top(len(data.get("places"))))
+        places = data.get("places")
+        top = asyncio.run(find_nearest_top(len(places)))
 
         query = str(data.get("query")).replace(
             '"', "").replace(',', '').strip()
+        topic_category = data.get("topic_category")
 
         d = {
             'title': f"Top {{top}} Best {query} in {{year}}",
@@ -32,12 +35,14 @@ def post_topic(data):
             'createdAt': datetime.datetime.now().isoformat(),
             'topId': str(top["_id"]),
             'type': "gmap_businesses",
+            'category': topic_category,
+            'index': 'true',
             'status': "published",
-            'lists': data.get("places")
+            'lists': places
         }
 
-        if len(data.get("places")) >= 1:
-            add_topic(d)
+        if len(places) >= 1:
+            asyncio.run(add_topic(d))
 
     except Exception as e:
         print(f"Error processing item: {str(e)}")
@@ -45,7 +50,7 @@ def post_topic(data):
         pass
 
 
-def add_topic(data):
+async def add_topic(data):
     lists = data["lists"]
     try:
         processed_lists = []
@@ -61,23 +66,21 @@ def add_topic(data):
             query_filter = {'_id': data["_id"]}
             new_data = {'$set': data}
             del new_data["$set"]["lists"]
-            result = col.update_one(query_filter, new_data)
-            get_processed_lists = asyncio.run(
-                process_list(lists, _id, topic_slug))
+            get_processed_lists = await process_list(lists, _id, topic_slug)
             for li in get_processed_lists:
                 processed_lists.append(li)
+            result = col.update_one(query_filter, new_data)
         else:
             data["_id"] = _id
             new_data = data
             del new_data["lists"]
-            result = col.insert_one(new_data)
-            get_processed_lists = asyncio.run(
-                process_list(lists, new_data["_id"], new_data["slug"]))
+            get_processed_lists = await process_list(lists, new_data["_id"], new_data["slug"])
             for li in get_processed_lists:
                 processed_lists.append(li)
+            result = col.insert_one(new_data)
 
-        asyncio.run(add_list(processed_lists))
-        generate_list_position(_id)
+        await add_list(processed_lists)
+        await generate_list_position(_id)
         print(f"{data["title"]} added to topic")
     except Exception as e:
         print(f"Error topic: {e}")
@@ -113,15 +116,19 @@ async def process_list(data, topic_id, topic_slug):
             else:
                 language_code = 'undefined'
 
+            last_two = item["place_id"][-4:].lower()
+            pId = last_two
+
             l_data = {
                 "topicId": str(topic_id),
                 "topic_slug": topic_slug,
                 "title": str(g_title).strip(),
+                "position": 0,
                 "is_english": language_code,
                 "subTitle": item["name"].strip(),
                 "description": re_write_text(item["about"]),
                 "body": re_write_text(item["about"]),
-                "slug": custom_slugify(item["name"]),
+                "slug": custom_slugify(f"{item["name"]}-{pId}"),
                 "rankingScore": int(str(m_rate + int(r_reviews))),
                 "ratingScore": item["rating"],
                 "gmap_link": item["link"],
@@ -145,6 +152,7 @@ async def process_list(data, topic_id, topic_slug):
                 "longitude": item["longitude"],
                 "lang_long": item["lang_long"],
                 "lang_short": item["lang_short"],
+                "amenities": item["amenities"],
                 "icon": item["icon"],
                 "status": "published",
                 "all_reviews": item["all_reviews"]
@@ -171,6 +179,7 @@ async def add_list(data):
             query_filter = {'place_id': item["place_id"]}
             new_data = {'$set': item}
             del new_data["$set"]["all_reviews"]
+            del new_data["$set"]["detailed_reviews"]
             bulk.append(UpdateOne(query_filter, new_data, upsert=True))
             get_processed_reviews = await process_reviews(reviews, item["place_id"])
             for rev in get_processed_reviews:
@@ -234,7 +243,9 @@ async def add_reviews(data):
             query_filter = {'review_id_hash': item["review_id_hash"]}
             new_data = {'$set': item}
             bulk.append(UpdateOne(query_filter, new_data, upsert=True))
-        col.bulk_write(bulk, ordered=False)
+
+        if len(bulk) > 0:
+            col.bulk_write(bulk, ordered=False)
     except Exception as e:
         print(f"Error review: {str(e)}")
         traceback.print_exc()
@@ -247,10 +258,18 @@ async def find_nearest_top(length):
 
         tops = await get_tops()
 
-        nearest_item = min(
-            tops['result'], key=lambda x: abs(int(x['top']) - length))
+        # Filter out values greater than the given length
+        filtered_tops = [x for x in tops['result'] if int(x['top']) <= length]
+
+        if filtered_tops:
+            # Find the nearest lower value
+            nearest_item = max(filtered_tops, key=lambda x: int(x['top']))
+        else:
+            # If all values are greater than the given length, return the minimum value
+            nearest_item = min(tops['result'], key=lambda x: int(x['top']))
 
         return nearest_item
+
     except Exception as e:
         print(f"Error find_nearest_top: {str(e)}")
         traceback.print_exc()
@@ -269,21 +288,37 @@ async def get_tops():
         pass
 
 
-def generate_list_position(topicId):
-    try:
-        db = get_database()
-        col = db["lists"]
-        item_details = col.find(
-            {'topicId': str(topicId)}).sort('rankingScore', pymongo.DESCENDING)
+async def generate_list_position(topicId):
 
-        for index, item in enumerate(item_details):
+    try:
+        db = get_database()  # Assuming get_database() retrieves the database connection
+        col = db["lists"]
+        item_details = col.find({'topicId': str(topicId)}).sort(
+            'rankingScore', pymongo.DESCENDING)
+
+        bulk_operations = []
+        n = 1
+        for item in item_details:
             query_filter = {'_id': item["_id"]}
-            new_data = {'$set': {'position': index + 1}}
-            result = col.update_one(query_filter, new_data)
+            new_data = {'$set': {'position': n}}
+            bulk_operations.append(pymongo.UpdateOne(query_filter, new_data))
+            n += 1
+
+        col.bulk_write(bulk_operations)
+        top = await find_nearest_top(n)
+
+        col_topic = db["topics"]  # Corrected collection name to "topics"
+        pdata = {
+            'topId': str(top["_id"]),
+            'newly_updated': "yes"
+        }
+        new_data = {'$set': pdata}
+        query_filter = {'_id': topicId}
+        col_topic.update_one(query_filter, new_data)
+
     except Exception as e:
-        print(e)
         traceback.print_exc()
-        pass
+        print("Error in generate_list_position:", e)
 
 
 def get_topics_for_video(topicId):

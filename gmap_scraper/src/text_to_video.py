@@ -9,6 +9,9 @@ from gtts import gTTS
 from moviepy.editor import TextClip, concatenate_videoclips, AudioFileClip, CompositeVideoClip, ImageClip, ColorClip
 import pyttsx3
 from PIL import Image
+from pathlib import Path
+from openai import OpenAI
+# client = OpenAI()
 
 engine = pyttsx3.init()
 

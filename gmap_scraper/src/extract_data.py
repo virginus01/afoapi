@@ -7,8 +7,6 @@ import string
 import sys
 import traceback
 
-from src.scraper_utils import create_search_link
-
 
 def toiso(date):
     return date.isoformat()
@@ -215,7 +213,12 @@ def extract_business_name(url):
 
 
 def extract_coordinates(data):
+    # Handle the case when safe_get returns an empty string
     link = safe_get(data, 6, 42)
+    if not link:
+        # Return default coordinates if the link is empty
+        return 0.0, 0.0
+
     # Regular expression pattern to match coordinates in the link
     pattern = r'@(-?\d+\.\d+),(-?\d+\.\d+)'
 
@@ -228,7 +231,8 @@ def extract_coordinates(data):
         longitude = float(match.group(2))
         return latitude, longitude
     else:
-        return None
+        # Return default coordinates if no match is found
+        return 0.0, 0.0
 
 
 def find_most_common_element(ls):
@@ -290,6 +294,7 @@ def check_data(data):
                 n += 1
     except Exception as e:
         print(f"An error occurred: {str(e)}")
+        traceback.print_exc()
 
 
 def safe_get2(data, *keys):
@@ -364,15 +369,57 @@ def get_detailed_reviews(data):
     return reviews
 
 
+def extract_links(data):
+    links = []
+    if isinstance(data, list):
+        for item in data:
+            links.extend(extract_links(item))
+    elif isinstance(data, str):
+        # Regular expression to match links
+        regex = r'https?://lh5\.googleusercontent\.com/\S+'
+        # Find all matches in the string
+        links.extend(rex.findall(regex, data))
+    return links
+
+
 def extract_data(input_str, link):
 
     try:
         data = parse(input_str)
-        # (get_detailed_reviews(data))
-        # sys.exit()
+        # 57 owner,
 
-        all_images = f"{get_images_0(data)}, {get_images_1(data)}, {
-            get_images_2(data)}, {get_images_3(data)}"
+        amenities = []
+        try:
+            for i in range(1, 11):
+                for item in safe_get(data, 6, 100, i):
+                    for item2 in safe_get(item, 2):
+                        am = safe_get(item2, 2, 2, 3)
+                        key = safe_get(item2, 2, 2, 2)
+                        if am is not None:
+                            amenities.append({"key": key, "amenity": am})
+        except Exception as e:
+            pass
+        all_amenities = amenities
+        # f"{get_images_0(data)}, {get_images_1(data)}, {
+        # get_images_2(data)}, {get_images_3(data)}"
+
+        all_images = []
+        all_images.append(get_images_0(data))
+        all_images.append(get_images_1(data))
+        all_images.append(get_images_2(data))
+        all_images.append(get_images_3(data))
+
+        all_image_links = extract_links(safe_get(data, 6, 171))
+        for link in all_image_links:
+            all_images.append(link)
+        all_image_links = extract_links(safe_get(data, 6, 175))
+        for link in all_image_links:
+            all_images.append(link)
+
+        unique_set = set(all_images)
+        all_image_links_u = list(unique_set)
+        all_image_links_s = '{{{}}}'.format(
+            ', '.join(['"{}"'.format(item) for item in all_image_links_u]))
 
         categories = get_categories(data)
         place_id = get_place_id(data)
@@ -409,7 +456,7 @@ def extract_data(input_str, link):
             'about': about,
             'featured_image': featured_image,
             'phone': phone,
-            'all_images': all_images,
+            'all_images': all_image_links_s,
             'all_reviews': detailed_reviews,
             'detailed_reviews': detailed_reviews,
             'workday_timing': workday_timing,
@@ -421,6 +468,7 @@ def extract_data(input_str, link):
             'lang_short': lang_short,
             'country': country,
             'icon': icon,
+            'amenities': all_amenities,
         }
     except Exception as e:
         traceback.print_exc()

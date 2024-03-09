@@ -2,8 +2,9 @@
 import json
 import random
 import time
-from src.lang import Lang
-from src.gmaps import Gmaps
+import traceback
+from ..src.lang import Lang
+from ..src.gmaps import Gmaps
 from lib.mongodb import get_database
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
@@ -37,8 +38,6 @@ class Generate:
                     cat_data = json.loads(cat_file_contents)
                     random.shuffle(cat_data)
                     random.shuffle(data)
-                    n = 0
-                    biz_location = {}
 
                     for country in data:
 
@@ -60,12 +59,9 @@ class Generate:
 
                                         queries.append(f"""{cat_data[0]} in "{
                                             city["name"]}" {country["name"]}""")
-
                                         print(queries)
                                         Gmaps.places(
-                                            queries, max=2, lang=Lang.English, scrape_reviews=False)
-                                        # sys.exit()
-                                        n += 1
+                                            queries, max=10, lang='en', topic_category=cat_data[0])
 
                 except json.JSONDecodeError as e:
                     print("Error decoding JSON:", e)
@@ -73,6 +69,7 @@ class Generate:
 
             except Exception as e:
                 print("An error occurred:", e)
+                traceback.print_exc()
                 pass
             finally:
                 time.sleep(3)

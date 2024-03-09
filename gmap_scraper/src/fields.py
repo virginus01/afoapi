@@ -64,6 +64,7 @@ class Fields:
     FEATURED_REVIEWS = "featured_reviews"
     DETAILED_REVIEWS = "detailed_reviews"
     ALL_REVIEWS = "all_reviews"
+    AMENITIES = "amenities"
 
 
 DEFAULT_FIELDS_WITHOUT_SOCIAL_DATA = [
@@ -90,7 +91,8 @@ DEFAULT_FIELDS_WITHOUT_SOCIAL_DATA = [
     Fields.COUNTRY,
     Fields.ICON,
     Fields.FEATURED_REVIEWS,
-    Fields.ALL_REVIEWS
+    Fields.ALL_REVIEWS,
+    Fields.AMENITIES,
 ]
 
 DEFAULT_SOCIAL_FIELDS = [
