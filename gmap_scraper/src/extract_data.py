@@ -1,3 +1,4 @@
+import ast
 from hashlib import md5
 import random
 import re as rex
@@ -282,34 +283,22 @@ def check_data(data):
         # Generate random code
         random_code = ''.join(random.choice(characters) for _ in range(10))
 
-        n = 0
-
         with open(f'output.txt', 'a', encoding='utf-8') as file:
-            for key in data:
-                if key is not None:
-                    output_line = f"key: {n} {str(
-                        [key])}\n\n\\n\n"
+            if (is_valid_array(str(data))):
+                for i, key in enumerate(data):
+                    if key is not None:
+                        output_line = f"key: {i} {str(
+                            [key])}\n\n\\n\n"
+                        print(output_line)
+                        file.write(output_line)
+            else:
+                if data is not None:
+                    output_line = f" {str(data)}\n\n\\n\n"
                     print(output_line)
                     file.write(output_line)
-                n += 1
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         traceback.print_exc()
-
-
-def safe_get2(data, *keys):
-    with open('output.txt', 'a', encoding='utf-8') as file:
-        for n, key in enumerate(keys):
-            file.write(f"\n\n\n\nINIKEY: {n}\n\n\n")
-            try:
-                data = data[key]
-                for i, item in enumerate(data):
-                    if item is not None:
-                        output_line = f"key: {i} {str([item])}\n\n\n\n\n"
-                        file.write(output_line)
-            except (IndexError, TypeError, KeyError):
-                pass  # Continue with the next key even if an exception occurs
-    return data
 
 
 def safe_get(data, *keys):
@@ -344,14 +333,30 @@ def get_detailed_reviews(data):
                 if day is None:
                     day = today.day
 
+                datet = f"{month}-{day}-{year}"
+
+                image = safe_get(r, 0, 1, 4, 0, 3)
+                language = safe_get(r, 0, 2, 1, 1)
+
+                all_review_image_links = []
+                review_image_links = extract_links(safe_get(r, 0, 2))
+                for link in review_image_links:
+                    all_review_image_links.append(link)
+                unique_set = set(all_review_image_links)
+                all_image_links_u = list(unique_set)
+                all_image_links_s = '{{{}}}'.format(
+                    ', '.join(['"{}"'.format(item) for item in all_image_links_u]))
+
                 r_data = {
                     "review_id_hash": safe_get(r, 0, 5),
                     'user_name': safe_get(r, 0, 1, 4, 0, 4),
-                    # 'review_language': safe_get(r, 1, 1),
+                    'review_language': language,
                     'review_text': safe_get(r, 0, 2, 1, 0),
                     "published_at_date": f"{month}-{day}-{year}",
                     # 'rating': safe_get(r, 1, 8, 1)
-                    "rating": "5.0",
+                    "user_photos": all_image_links_s,
+                    "user_photo": image,
+                    "rating": "",
                     "published_at": "",
                     "response_from_owner_text": "",
                     "response_from_owner_ago": "",
@@ -362,7 +367,68 @@ def get_detailed_reviews(data):
                     "total_number_of_photos_by_reviewer": "",
                     "is_local_guide": "",
                     "review_translated_text": "",
-                    "user_photos": "",
+
+                    "response_from_owner_translated_text": "",
+                }
+                reviews.append(r_data)
+    return reviews
+
+
+def get_detailed_reviews2(data):
+    reviews = []
+    data = safe_get(data, 6, 175, 9, 0, 0, 0)
+
+    if data is not None:
+        for r in data:
+            if r is not None:
+                # check_data(safe_get(r, 0))
+
+                year = safe_get(r, 2, 2, 0, 1, 21, 6, 8, 0)
+                month = safe_get(r, 2, 2, 0, 1, 21, 6, 8, 1)
+                day = safe_get(r, 2, 2, 0, 1, 21, 6, 8, 2)
+                # Get today's date
+                today = datetime.today()
+
+                # Assign today's date to year, month, or day if any of them are None
+                if year is None:
+                    year = today.year
+                if month is None:
+                    month = today.month
+                if day is None:
+                    day = today.day
+
+                image = safe_get(r, 1, 4, 0, 3)
+                language = safe_get(r, 2, 1, 1)
+
+                all_review_image_links = []
+                review_image_links = extract_links(safe_get(r, 2))
+                for link in review_image_links:
+                    all_review_image_links.append(link)
+                unique_set = set(all_review_image_links)
+                all_image_links_u = list(unique_set)
+                all_image_links_s = '{{{}}}'.format(
+                    ', '.join(['"{}"'.format(item) for item in all_image_links_u]))
+
+                r_data = {
+                    "review_id_hash": safe_get(r, 5),
+                    'user_name': safe_get(r, 1, 4, 0, 4),
+                    'review_language':  language,
+                    'review_text': safe_get(r, 2, 1, 0),
+                    "published_at_date": f"{month}-{day}-{year}",
+                    # 'rating': safe_get(r, 1, 8, 1)
+                    "user_photo": image,
+                    "user_photos": all_image_links_s,
+                    "rating": "",
+                    "published_at": "",
+                    "response_from_owner_text": "",
+                    "response_from_owner_ago": "",
+                    "response_from_owner_date": "",
+                    "review_likes_count": "",
+                    "total_number_of_reviews_by_reviewer": "",
+                    "user_url": "",
+                    "total_number_of_photos_by_reviewer": "",
+                    "is_local_guide": "",
+                    "review_translated_text": "",
                     "response_from_owner_translated_text": "",
                 }
                 reviews.append(r_data)
@@ -382,11 +448,28 @@ def extract_links(data):
     return links
 
 
+def is_valid_array(string):
+    try:
+        value = ast.literal_eval(string)
+        return isinstance(value, list)
+    except (ValueError, SyntaxError):
+        return False
+
+
+def check_array(data):
+    if is_valid_array(str(data)):
+        print("Valid array!")
+    else:
+        print("Not a valid array.")
+
+
 def extract_data(input_str, link):
 
     try:
         data = parse(input_str)
         # 57 owner,
+        # print(get_detailed_reviews2(data))
+        # sys.exit()
 
         amenities = []
         try:

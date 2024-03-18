@@ -26,23 +26,26 @@ def process_topics_lists(data):
                 l_path = os.getenv("LIST_IMAGE_PATH")
                 slug = item['slug']
 
-                image_path = f"{base}{l_path}/{slug}"
+                image_path = f"{base}/{l_path}/{slug}"
                 s3_key = f"{l_path}/{slug}.png"
                 screenshot = save_screenshot({'url': image_path, 'slug': slug})
-                upload_image_to_s3(screenshot["path"], os.getenv(
-                    "NEXT_PUBLIC_AWS_BUCKET"), s3_key)
 
-                list_data = {
-                    "newly_updated": "no",
-                    "generatedImagePath": s3_key,
-                    "imageHost": "aws-s3"
-                }
+                if screenshot["success"] == True:
+                    upload_image_to_s3(screenshot["path"], os.getenv(
+                        "NEXT_PUBLIC_AWS_BUCKET"), s3_key)
 
-                query_filter = {'_id': item["_id"]}
-                new_data = {'$set': list_data}
-                bulk_operations.append(
-                    pymongo.UpdateOne(query_filter, new_data))
-            col.bulk_write(bulk_operations)
+                    list_data = {
+                        "newly_updated": "no",
+                        "generatedImagePath": s3_key,
+                        "imageHost": "aws-s3"
+                    }
+
+                    query_filter = {'_id': item["_id"]}
+                    new_data = {'$set': list_data}
+                    bulk_operations.append(
+                        pymongo.UpdateOne(query_filter, new_data))
+            if bulk_operations is not None:
+                col.bulk_write(bulk_operations)
             print(f"updated lists images for {data["title"]}")
         else:
             print("list not found for", data["title"])

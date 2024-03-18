@@ -48,7 +48,6 @@ class Generate:
                             states = country["states"]
                             random.shuffle(states)
                             for state in states:
-
                                 queries.append(f"""{cat_data[0]} in "{
                                     state["name"]}", {country["name"]}""")
 
@@ -56,12 +55,11 @@ class Generate:
                                     cities = country["states"]
                                     random.shuffle(cities)
                                     for city in cities:
-
                                         queries.append(f"""{cat_data[0]} in "{
                                             city["name"]}" {country["name"]}""")
                                         print(queries)
                                         Gmaps.places(
-                                            queries, max=10, lang='en', topic_category=cat_data[0])
+                                            queries, max=120, lang='en', topic_category=cat_data[0])
 
                 except json.JSONDecodeError as e:
                     print("Error decoding JSON:", e)

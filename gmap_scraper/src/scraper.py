@@ -231,6 +231,9 @@ def add_arguments(data, options):
     max_retry=3,
     headless=True,
     output=None,
+    run_async=False,
+    async_queue=False,
+    parallel=2
 )
 def scrape_places(driver: AntiDetectDriver, data):
 

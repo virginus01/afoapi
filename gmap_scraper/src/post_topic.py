@@ -18,11 +18,15 @@ import traceback
 def post_topic(data):
     try:
         places = data.get("places")
-        top = asyncio.run(find_nearest_top(len(places)))
 
         query = str(data.get("query")).replace(
             '"', "").replace(',', '').strip()
         topic_category = data.get("topic_category")
+
+        print(f"""sending Top {{top}} Best {
+              query} in {{year}} to server with {len(places)} lists""")
+
+        top = asyncio.run(find_nearest_top(len(places)))
 
         d = {
             'title': f"Top {{top}} Best {query} in {{year}}",
@@ -209,6 +213,7 @@ async def process_reviews(data, list_id):
                 "is_english": language_code,
                 "review_id_hash": item["review_id_hash"],
                 "rating": item["rating"],
+                "review_language": item["review_language"],
                 "review_text": item["review_text"],
                 "published_at": item["published_at"],
                 "published_at_date": item["published_at_date"],
@@ -219,6 +224,7 @@ async def process_reviews(data, list_id):
                 "total_number_of_reviews_by_reviewer": item["total_number_of_reviews_by_reviewer"],
                 "user_url": item["user_url"],
                 "user_name": item["user_name"],
+                "user_photo": item["user_photo"],
                 "user_photos": item["user_photos"],
                 "total_number_of_photos_by_reviewer": item["total_number_of_photos_by_reviewer"],
                 "is_local_guide": item["is_local_guide"],
@@ -310,7 +316,8 @@ async def generate_list_position(topicId):
         col_topic = db["topics"]  # Corrected collection name to "topics"
         pdata = {
             'topId': str(top["_id"]),
-            'newly_updated': "yes"
+            'newly_updated': "yes",
+            "generatedImagePath": ""
         }
         new_data = {'$set': pdata}
         query_filter = {'_id': topicId}

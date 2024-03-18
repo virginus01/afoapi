@@ -1,11 +1,12 @@
 import asyncio
 import os
+import sys
 from gmap_scraper.src.text_to_video import generate_video
 from gmap_scraper.src.post_topic import post_topic
 from gmap_scraper.src import Gmaps
 from gmap_scraper.src.general_process import Generate
 from dotenv import load_dotenv
-from screenshot.src.process_topics import process_images
+from screenshot.src.process_topics import process_images, process_images_direct
 import os
 from django.conf import settings
 import boto3
@@ -14,13 +15,16 @@ import threading
 
 
 def run_gmaps_places():
-    queries = ['sandwich shop in "Georgia"', 'web designers in Lagos']
-    # Gmaps.places(queries, max=10, lang='en', scrape_reviews=False)
+    queries = ['sandwich shop in "Georgia"',]
+    # Gmaps.places(queries, max=120, lang='en', scrape_reviews=False,
+    # topic_category="Sandwich Shop")
     Generate.generate_tops_in_country()
 
 
 def main():
-    load_dotenv()
+    process_image = False
+    direct_image_processing = False
+    load_dotenv(".env.prod")
     db = get_database()
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
     session = boto3.Session(
@@ -32,16 +36,25 @@ def main():
 
     # Create and start threads
     gmaps_thread = threading.Thread(target=run_gmaps_places)
-    # process_images_thread = threading.Thread(target=process_images, args=(db,))
-
     gmaps_thread.start()
-    # process_images_thread.start()
+
+    if process_image:
+        process_images_thread = threading.Thread(
+            target=process_images, args=(db,))
+        process_images_thread.start()
+
+    if direct_image_processing:
+        process_images_direct_thread = threading.Thread(
+            target=process_images_direct, args=(db,))
+        process_images_direct_thread.start()
 
     # Wait for both threads to finish
     gmaps_thread.join()
-    # process_images_thread.join()
+    if process_image:
+        process_images_thread.join()
 
-    # process_images(db)
+    if process_image:
+        process_images(db)
 
 
 if __name__ == "__main__":

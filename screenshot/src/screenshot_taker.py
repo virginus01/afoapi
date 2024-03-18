@@ -1,5 +1,6 @@
 import base64
 from io import BytesIO
+import time
 import traceback
 from botasaurus import AntiDetectDriver, browser
 from PIL import Image
@@ -59,27 +60,29 @@ def take_screenshot(driver: AntiDetectDriver, request):
     headless=False,
     output=None,
     cache=False
-
 )
 def save_screenshot(driver: AntiDetectDriver, data):
-
     try:
         # Open the URL
-        driver.get(data["url"])
-        path = f"output/screenshots/{data["slug"]}.png"
-        driver.set_window_size(1920, 1080,)
+        drive = driver.get(data["url"])
+
+        # Check if the response status code indicates success
+        if drive is None:
+            print("Page did not load successfully. Skipping screenshot capture.")
+            return {'path': '', 'success': False}
+
+        path = f"output/screenshots/{data['slug']}.png"
+        driver.set_window_size(1920, 1080)
+        print("sleeping")
         driver.save_screenshot(data["slug"])
 
-        return {'path': path, 'driver': driver}
+        return {'path': path, 'driver': driver, 'success': True}
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        # driver.quit()
         traceback.print_exc()
-        return {'path': ''}
+        return {'path': '', 'success': False}
     finally:
-        # Close the browser window
-        # driver.quit()
         pass
 
 

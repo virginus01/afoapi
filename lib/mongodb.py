@@ -11,12 +11,14 @@ def get_database():
     try:
         load_dotenv()
         global client  # Declare client as global to modify it within the function
-        db_url = os.getenv("MONGODB_URL_LOCAL")
+        db_url = os.getenv("MONGODB_URL")
 
         # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
         if client is None:
-            # client = MongoClient(db_url, tlsCAFile=certifi.where())
-            client = MongoClient(db_url)
+            if os.getenv("PRODUCTION") == "True":
+                client = MongoClient(db_url, tlsCAFile=certifi.where())
+            else:
+                client = MongoClient(db_url)
 
         # Create the database for our example (we will use the same database throughout the tutorial)
         return client['topingnow']
