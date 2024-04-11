@@ -1,17 +1,21 @@
 import asyncio
 import os
+import sqlite3
 import sys
+from attack.send_attack import push_attacks
 from gmap_scraper.src.text_to_video import generate_video
 from gmap_scraper.src.post_topic import post_topic
 from gmap_scraper.src import Gmaps
 from gmap_scraper.src.general_process import Generate
 from dotenv import load_dotenv
+from mtn_bulk_sms.src.perform_send import mtn_bulk_sms_lite
 from screenshot.src.process_topics import process_images, process_images_direct
 import os
 from django.conf import settings
 import boto3
 from lib.mongodb import get_database
 import threading
+from wa_sender.src.perform_send import click_and_send, replaceName
 
 
 def run_gmaps_places():
@@ -24,7 +28,6 @@ def run_gmaps_places():
 def main():
     process_image = False
     direct_image_processing = False
-    load_dotenv(".env.prod")
     db = get_database()
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
     session = boto3.Session(
@@ -56,6 +59,14 @@ def main():
     if process_image:
         process_images(db)
 
-
 if __name__ == "__main__":
-    main()
+    load_dotenv(".env.prod")
+    conn = sqlite3.connect('db.local.sqlite3')
+    cursor = conn.cursor()
+    attack_target=os.getenv('attack_target'),
+    # main()
+    #push_attacks("https://example.com/")
+    mtn_bulk_sms_lite()
+    #click_and_send()
+  
+    pass
