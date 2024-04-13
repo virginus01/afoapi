@@ -16,6 +16,7 @@ import boto3
 from lib.mongodb import get_database
 import threading
 from wa_sender.src.perform_send import click_and_send, replaceName
+from youtube_upload.video import process_video
 
 
 def run_gmaps_places():
@@ -63,10 +64,11 @@ if __name__ == "__main__":
     load_dotenv(".env.prod")
     conn = sqlite3.connect('db.local.sqlite3')
     cursor = conn.cursor()
-    attack_target=os.getenv('attack_target'),
+    attack_target=os.getenv('attack_target')
     # main()
     #push_attacks("https://example.com/")
-    mtn_bulk_sms_lite()
+    #mtn_bulk_sms_lite()
+    asyncio.run(process_video())
     #click_and_send()
   
     pass

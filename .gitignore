@@ -117,6 +117,8 @@ celerybeat.pid
 .env
 .env.prod
 .venv
+token.json
+client_secret.json
 env/
 venv/
 ENV/
@@ -128,6 +130,8 @@ venv.bak/
 .spyproject
 
 db.local.sqlite3
+client_secret.json
+media_output/
 
 # Rope project settings
 .ropeproject
